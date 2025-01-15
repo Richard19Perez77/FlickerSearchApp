@@ -24,42 +24,67 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
 
+/**
+ * Displays the main screen of the application, including a search bar, a loading indicator, and
+ * a list of image results fetched from the Flickr API.
+ *
+ * @param navController The [NavHostController] for navigating between screens.
+ * @param viewModel The [MainViewModel] for managing the UI state and data fetching.
+ */
 @Composable
-fun MainScreen(navController: NavHostController, viewModel: MainViewModel = hiltViewModel()) {
+fun MainScreen(
+    navController: NavHostController,
+    viewModel: MainViewModel = hiltViewModel()
+) {
+    // Observe the UI state from the ViewModel.
     val state = viewModel.state
-    Column(modifier = Modifier.fillMaxSize().padding(8.dp)) {
+
+    // Layout for the main screen.
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(8.dp)
+    ) {
+        // Search bar for entering a query to fetch images.
         var query by remember { mutableStateOf(TextFieldValue()) }
         TextField(
             value = query,
             onValueChange = {
                 query = it
-                viewModel.search(it.text)
+                viewModel.search(it.text) // Trigger search in ViewModel when query changes.
             },
             modifier = Modifier.fillMaxWidth(),
             placeholder = { Text("Search Flickr...") }
         )
 
+        // Show a loading indicator while data is being fetched.
         if (state.value.isLoading) {
             CircularProgressIndicator(modifier = Modifier.padding(16.dp))
         }
 
+        // Display the list of images in a lazy column.
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             items(state.value.images.count()) { i ->
-                var item = state.value.images[i]
-                Row(modifier = Modifier.clickable {
-                    navController.navigate(
-                        "detail/${item.title}/${item.description}/${item.author}/${item.published}/${item.media.m}"
-                    )
-                }) {
+                val item = state.value.images[i]
+                Row(
+                    modifier = Modifier.clickable {
+                        navController.navigate(
+                            "detail/${item.title}/${item.description}/${item.author}/${item.published}/${item.media.m}"
+                        )
+                    }
+                ) {
+                    // Display the image thumbnail.
                     Image(
                         painter = rememberImagePainter(item.media.m),
                         contentDescription = null,
-                        modifier = Modifier.size(100.dp).padding(8.dp)
+                        modifier = Modifier
+                            .size(100.dp)
+                            .padding(8.dp)
                     )
+                    // Display the title of the image.
                     Text(item.title, modifier = Modifier.padding(8.dp))
                 }
             }
         }
     }
 }
-
