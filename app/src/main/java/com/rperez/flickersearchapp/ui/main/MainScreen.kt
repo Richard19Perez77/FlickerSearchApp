@@ -1,5 +1,6 @@
 package com.rperez.flickersearchapp.ui.main
 
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -66,11 +67,10 @@ fun MainScreen(
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             items(state.value.images.count()) { i ->
                 val item = state.value.images[i]
+                val route = "detail/${Uri.encode(item.title)}/${Uri.encode(item.description)}/${Uri.encode(item.author)}/${Uri.encode(item.published)}/${Uri.encode(item.media.m)}"
                 Row(
                     modifier = Modifier.clickable {
-                        navController.navigate(
-                            "detail/${item.title}/${item.description}/${item.author}/${item.published}/${item.media.m}"
-                        )
+                        navController.navigate(route)
                     }
                 ) {
                     // Display the image thumbnail.
