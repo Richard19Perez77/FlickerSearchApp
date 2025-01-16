@@ -1,11 +1,9 @@
 package com.rperez.flickersearchapp
 
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
-import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavHostController
 import com.rperez.flickersearchapp.state.MainState
 import com.rperez.flickersearchapp.ui.main.MainScreen
@@ -28,19 +26,19 @@ class ComposeMainScreenTest {
     @MockK
     lateinit var navController: NavHostController
 
-    @MockK
+    @MockK(relaxed = true)
     lateinit var viewModel: MainViewModel
 
-    private val mockState = mutableStateOf<MainState>(MainState())
-
     @Before
-    fun before(){
+    fun before() {
         MockKAnnotations.init(this)
-        every { viewModel.state } returns mockState
     }
 
     @Test
     fun defaultTextTest() {
+        val mockState = mutableStateOf(MainState())
+        every { viewModel.state } answers { mockState }
+
         composeTestRule.setContent {
             FlickerSearchAppTheme {
                 MainScreen(
@@ -52,4 +50,23 @@ class ComposeMainScreenTest {
 
         composeTestRule.onNodeWithText("Search Flickr...").assertIsDisplayed()
     }
+
+    @Test
+    fun loadingStateTest() {
+        val mockState = mutableStateOf(MainState(isLoading = true))
+
+        every { viewModel.state } returns mockState
+
+        composeTestRule.setContent {
+            FlickerSearchAppTheme {
+                MainScreen(
+                    navController,
+                    viewModel
+                )
+            }
+        }
+
+        composeTestRule.onNodeWithText("Loading...").assertIsDisplayed()
+    }
+
 }
