@@ -25,7 +25,7 @@ class MainViewModel @Inject constructor(
 ) : ViewModel() {
 
     // Backing field for the UI state.
-    private val _state = mutableStateOf(MainState())
+    private val _state = mutableStateOf<MainState>(MainState.Default())
 
     /**
      * Publicly exposed immutable state representing the UI.
@@ -42,13 +42,16 @@ class MainViewModel @Inject constructor(
      */
     fun search(query: String) {
         // Update the state to indicate loading.
-        _state.value = MainState(isLoading = true)
+        _state.value = MainState.Loading
 
         // Perform the API call in a background thread.
         viewModelScope.launch(Dispatchers.IO) {
-            val result = repository.searchPhotos(query)
-            // Update the state with the fetched photos.
-            _state.value = MainState(images = result)
+            _state.value = try {
+                val result = repository.searchPhotos(query)
+                MainState.Success(items = result)
+            } catch (_: Exception) {
+                MainState.Error()
+            }
         }
     }
 }

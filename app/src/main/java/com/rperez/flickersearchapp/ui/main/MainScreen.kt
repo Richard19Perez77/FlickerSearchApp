@@ -3,7 +3,6 @@ package com.rperez.flickersearchapp.ui.main
 import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.snapping.SnapPosition
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,7 +21,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.TextFieldValue
@@ -61,46 +59,88 @@ fun MainScreen(
                 query = it
                 search(it.text) // Trigger search in ViewModel when query changes.
             },
-            modifier = Modifier.fillMaxWidth().testTag("search_flickr"),
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag("search_flickr"),
             placeholder = { Text("Search Flickr...") }
         )
 
-        // Show a loading indicator while data is being fetched.
-        if (state.value.isLoading) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .testTag("loading"),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator(modifier = Modifier.padding(16.dp))
+        when (val currentState = state.value) {
+            is MainState.Error -> {
+                var text = currentState.message
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .testTag("error"),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(text)
+                }
             }
-        } else {
-            // Display the list of images in a lazy column.
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
-                items(state.value.images.count()) { i ->
-                    val item = state.value.images[i]
-                    val route = "detail/${Uri.encode(item.title)}/${Uri.encode(item.description)}/${
-                        Uri.encode(item.author)
-                    }/${Uri.encode(item.published)}/${Uri.encode(item.media.m)}"
-                    Row(
+
+            is MainState.Loading -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .testTag("loading"),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(modifier = Modifier.padding(16.dp))
+                }
+            }
+
+            is MainState.Success -> {
+                var items = currentState.items
+                if (items.count() == 0) {
+                    Box(
                         modifier = Modifier
-                            .testTag("item$i")
-                            .clickable {
-                                navController.navigate(route)
-                            }
+                            .fillMaxSize()
+                            .testTag("no_items"),
+                        contentAlignment = Alignment.Center
                     ) {
-                        // Display the image thumbnail.
-                        Image(
-                            painter = rememberAsyncImagePainter(item.media.m),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .size(100.dp)
-                                .padding(8.dp)
-                        )
-                        // Display the title of the image.
-                        Text(item.title, modifier = Modifier.padding(8.dp))
+                        Text("No Items for Search String")
                     }
+                } else {
+                    LazyColumn(modifier = Modifier.fillMaxSize()) {
+                        items(items.count()) { i ->
+                            val item = items[i]
+                            val route =
+                                "detail/${Uri.encode(item.title)}/${Uri.encode(item.description)}/${
+                                    Uri.encode(item.author)
+                                }/${Uri.encode(item.published)}/${Uri.encode(item.media.m)}"
+                            Row(
+                                modifier = Modifier
+                                    .testTag("item$i")
+                                    .clickable {
+                                        navController.navigate(route)
+                                    }
+                            ) {
+                                // Display the image thumbnail.
+                                Image(
+                                    painter = rememberAsyncImagePainter(item.media.m),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .size(100.dp)
+                                        .padding(8.dp)
+                                )
+                                // Display the title of the image.
+                                Text(item.title, modifier = Modifier.padding(8.dp))
+                            }
+                        }
+                    }
+
+                }
+            }
+
+            is MainState.Default -> {
+                var text = currentState.message
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .testTag("default"),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(text)
                 }
             }
         }
