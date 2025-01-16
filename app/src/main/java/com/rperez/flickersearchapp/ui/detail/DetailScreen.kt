@@ -1,9 +1,13 @@
 package com.rperez.flickersearchapp.ui.detail
 
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
+import android.webkit.WebResourceError
+import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.scrollable
@@ -90,17 +94,57 @@ fun DetailScreen(
             modifier = Modifier.padding(4.dp)
         )
 
+
         AndroidView(
             modifier = Modifier.fillMaxWidth(),
             factory = { context ->
                 WebView(context).apply {
                     webViewClient = object : WebViewClient() {
                         override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
-                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                            context.startActivity(intent)
-                            return true
+                            return try {
+                                val uri = Uri.parse(url)
+                                val intent = Intent(Intent.ACTION_VIEW, uri)
+
+                                // Validate URL scheme
+                                if (uri.scheme == null) {
+                                    Toast.makeText(context, "Invalid URL", Toast.LENGTH_SHORT)
+                                        .show()
+                                    return true
+                                }
+
+                                context.startActivity(intent)
+                                true
+                            } catch (e: ActivityNotFoundException) {
+                                Toast.makeText(
+                                    context,
+                                    "No app found to open this link",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                true
+                            } catch (e: Exception) {
+                                Toast.makeText(
+                                    context,
+                                    "An error occurred: ${e.localizedMessage}",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                true
+                            }
+                        }
+
+                        override fun onReceivedError(
+                            view: WebView?,
+                            request: WebResourceRequest?,
+                            error: WebResourceError?
+                        ) {
+                            super.onReceivedError(view, request, error)
+                            Toast.makeText(
+                                context,
+                                "Error loading page: ${error?.description ?: "Invalid Link"}",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     }
+
                     loadDataWithBaseURL(null, description, "text/html", "UTF-8", null)
                 }
             },
