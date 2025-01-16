@@ -85,7 +85,7 @@ fun MainScreen(
                     }/${Uri.encode(item.published)}/${Uri.encode(item.media.m)}"
                     Row(
                         modifier = Modifier
-                            .testTag("Item$i")
+                            .testTag("item$i")
                             .clickable {
                                 navController.navigate(route)
                             }

@@ -9,6 +9,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
@@ -41,7 +42,7 @@ fun DetailScreen(
         Text(
             text = "Item Details",
             style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(4.dp)
+            modifier = Modifier.padding(4.dp).testTag("item_details")
         )
         // Displays the photo using the provided URL.
         Image(

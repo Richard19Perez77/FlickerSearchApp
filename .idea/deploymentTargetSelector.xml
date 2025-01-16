@@ -8,13 +8,16 @@
       <SelectionState runConfigName="Tests in 'com.rperez.flickersearchapp'">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="MainScreenTest">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
       <SelectionState runConfigName="ComposeMainScreenTest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="loadingStateTest()">
+      <SelectionState runConfigName="MainScreenToDetailsScreenTest">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="testSearchFieldChangeHasResults()">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="testSearchFieldChangeClickItem1ToDetails()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>
