@@ -39,6 +39,12 @@ android {
     buildFeatures {
         compose = true
     }
+    packaging {
+        resources.pickFirsts.add("META-INF/LICENSE-notice.md")
+        resources.pickFirsts.add("META-INF/LICENSE.md")
+        resources.pickFirsts.add("META-INF/AL2.0")
+        resources.pickFirsts.add("META-INF/LGPL2.1")
+    }
 }
 
 dependencies {
@@ -68,6 +74,14 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     androidTestImplementation("io.mockk:mockk-android:1.13.5")
     androidTestImplementation("androidx.navigation:navigation-testing:2.8.5")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
+    androidTestImplementation("androidx.test:runner:1.6.2")
+    androidTestImplementation("androidx.test:rules:1.6.1")
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.7.6")
+    androidTestImplementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+    androidTestImplementation("com.google.dagger:hilt-android-testing:2.54")
+    androidTestAnnotationProcessor("com.google.dagger:hilt-compiler:2.54")
+    debugImplementation("androidx.compose.ui:ui-test-manifest:1.7.6")
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 }

@@ -10,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
 
 /**
@@ -37,9 +38,14 @@ fun DetailScreen(
             .fillMaxSize()
             .padding(16.dp)
     ) {
+        Text(
+            text = "Item Details",
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(4.dp)
+        )
         // Displays the photo using the provided URL.
         Image(
-            painter = rememberImagePainter(url),
+            painter = rememberAsyncImagePainter(url),
             contentDescription = null, // No specific description for accessibility
             modifier = Modifier
                 .fillMaxWidth()

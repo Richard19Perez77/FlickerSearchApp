@@ -19,6 +19,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -69,7 +70,9 @@ fun MainScreen(
                 val item = state.value.images[i]
                 val route = "detail/${Uri.encode(item.title)}/${Uri.encode(item.description)}/${Uri.encode(item.author)}/${Uri.encode(item.published)}/${Uri.encode(item.media.m)}"
                 Row(
-                    modifier = Modifier.clickable {
+                    modifier = Modifier
+                        .testTag("Item$i")
+                        .clickable {
                         navController.navigate(route)
                     }
                 ) {
