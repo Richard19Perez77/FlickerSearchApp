@@ -3,11 +3,14 @@ package com.rperez.flickersearchapp
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.rperez.flickersearchapp.navigation.Screen
 import com.rperez.flickersearchapp.ui.detail.DetailScreen
 import com.rperez.flickersearchapp.ui.main.MainScreen
+import com.rperez.flickersearchapp.ui.main.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 /**
@@ -30,8 +33,10 @@ class MainActivity : ComponentActivity() {
 
         // Set the content of the activity using Jetpack Compose.
         setContent {
+
             // Create a NavController to manage navigation between composable screens.
             val navController = rememberNavController()
+            val viewModel : MainViewModel = hiltViewModel()
 
             /**
              * Define the navigation graph for the app.
@@ -41,16 +46,23 @@ class MainActivity : ComponentActivity() {
              * 2. "detail": A detail screen that displays additional information based on passed arguments.
              */
             NavHost(
-                navController = navController, // Navigation controller to manage destinations
-                startDestination = "main" // Initial destination for the navigation graph
+                navController = navController,
+                startDestination = Screen.Home.route
             ) {
+
                 /**
                  * Composable destination for the main screen.
                  *
                  * @param navController The navigation controller passed to the `MainScreen`.
+                 * @param state The state of MainViewModel MainState passed to the `MainScreen`.
+                 * @param search  The observer for search text added for fetch of items.
                  */
-                composable("main") {
-                    MainScreen(navController) // Display the main screen
+                composable(Screen.Home.route) {
+                    MainScreen(
+                        navController,
+                        viewModel.state,
+                        viewModel::search
+                    )
                 }
 
                 /**
@@ -63,7 +75,7 @@ class MainActivity : ComponentActivity() {
                  * - `published`: The publication date of the item.
                  * - `url`: The URL of the item.
                  */
-                composable("detail/{title}/{description}/{author}/{published}/{url}") { backStackEntry ->
+                composable(Screen.Detail.route) { backStackEntry ->
                     // Extract arguments from the navigation back stack entry.
                     val title = backStackEntry.arguments?.getString("title") ?: ""
                     val description = backStackEntry.arguments?.getString("description") ?: ""

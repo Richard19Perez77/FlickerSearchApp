@@ -14,6 +14,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -22,24 +23,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import coil.compose.rememberImagePainter
+import coil.compose.rememberAsyncImagePainter
+import com.rperez.flickersearchapp.state.MainState
 
 /**
  * Displays the main screen of the application, including a search bar, a loading indicator, and
  * a list of image results fetched from the Flickr API.
  *
  * @param navController The [NavHostController] for navigating between screens.
- * @param viewModel The [MainViewModel] for managing the UI state and data fetching.
+ * @param state The [MainState] the UI state and data fetching.
+ * @param search The [MainViewModel.search] the update method on text entered.
  */
 @Composable
 fun MainScreen(
     navController: NavHostController,
-    viewModel: MainViewModel = hiltViewModel()
+    state: State<MainState>,
+    search: (String) -> Unit
 ) {
-    // Observe the UI state from the ViewModel.
-    val state = viewModel.state
 
     // Layout for the main screen.
     Column(
@@ -47,13 +48,14 @@ fun MainScreen(
             .fillMaxSize()
             .padding(8.dp)
     ) {
+
         // Search bar for entering a query to fetch images.
         var query by remember { mutableStateOf(TextFieldValue()) }
         TextField(
             value = query,
             onValueChange = {
                 query = it
-                viewModel.search(it.text) // Trigger search in ViewModel when query changes.
+                search(it.text) // Trigger search in ViewModel when query changes.
             },
             modifier = Modifier.fillMaxWidth(),
             placeholder = { Text("Search Flickr...") }
@@ -78,7 +80,7 @@ fun MainScreen(
                 ) {
                     // Display the image thumbnail.
                     Image(
-                        painter = rememberImagePainter(item.media.m),
+                        painter = rememberAsyncImagePainter(item.media.m),
                         contentDescription = null,
                         modifier = Modifier
                             .size(100.dp)

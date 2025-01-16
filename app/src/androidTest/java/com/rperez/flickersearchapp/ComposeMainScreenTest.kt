@@ -36,14 +36,12 @@ class ComposeMainScreenTest {
 
     @Test
     fun defaultTextTest() {
-        val mockState = mutableStateOf(MainState())
-        every { viewModel.state } answers { mockState }
-
         composeTestRule.setContent {
             FlickerSearchAppTheme {
                 MainScreen(
                     navController,
-                    viewModel
+                    viewModel.state,
+                    viewModel::search
                 )
             }
         }
@@ -61,12 +59,12 @@ class ComposeMainScreenTest {
             FlickerSearchAppTheme {
                 MainScreen(
                     navController,
-                    viewModel
+                    viewModel.state,
+                    viewModel::search
                 )
             }
         }
 
         composeTestRule.onNodeWithText("Loading...").assertIsDisplayed()
     }
-
 }
